@@ -1,0 +1,28 @@
+1. Apresentação do sistema
+Uma introdução explicando o que é o sistema, qual o objetivo dele e para quem é destinado. No caso de vocês: o clube do IBTP, o que ele oferece, sua missão.
+
+2. Regras de negócio
+As regras que o sistema deve seguir. Exemplos para o clube:
+
+Um membro só pode se inscrever em um evento se estiver com cadastro ativo
+Cada membro tem apenas um cargo por vez
+Um projeto precisa ter pelo menos um membro responsável
+Somente membros podem visualizar projetos internos
+
+
+3. Classes
+Descrição de cada classe que está na pasta Model/, explicando o que ela representa e quais são seus atributos. Por exemplo:
+
+Membro — representa uma pessoa cadastrada no clube, com nome, email, data de entrada, cargo etc.
+Evento — representa um evento do clube, com título, data, descrição, vagas etc.
+
+
+4. Tabelas do banco de dados
+A estrutura das tabelas que serão criadas no banco. Para cada tabela, mostrar os campos, tipos e se é chave primária ou estrangeira. Exemplo:
+Tabela membros: id, nome, email, senha, data_entrada, id_cargo
+
+5. Equipe de desenvolvimento
+Nome dos integrantes do grupo, e pode incluir o papel de cada um se quiser (ex: desenvolvedor, documentador, designer).
+
+Como organizar na prática
+Pode ser tudo em um único arquivo Docs/index.php com um menu interno que navega entre as seções, ou arquivos separados como regras.php, classes.php, tabelas.php, equipe.php — os dois jeitos são válidos. O mais simples para o trabalho é um arquivo só com âncoras (#regras, #classes etc.).
