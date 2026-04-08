@@ -15,14 +15,5 @@ class Eventos
         $this->local = $wlocal;
     }
 
-    function __destruct()
-    {
-        //echo "<br>No destrutor de Pessoas<br>" ;
-    }
-    /*
-        function display(){
-            echo "<br> nome = " . $this->nome ;
-            echo "<br> sexo = " . $this->sexo . "<br>" ;
-        }
-*/
+    function criarEvento()
 }
