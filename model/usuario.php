@@ -17,14 +17,7 @@ class Usuario
         $this->senha = $wsenha;
     }
 
-    function __destruct()
-    {
-        //echo "<br>No destrutor de Pessoas<br>" ;
+    function cadastrar(){
+        
     }
-    /*
-        function display(){
-            echo "<br> nome = " . $this->nome ;
-            echo "<br> sexo = " . $this->sexo . "<br>" ;
-        }
-*/
 }
