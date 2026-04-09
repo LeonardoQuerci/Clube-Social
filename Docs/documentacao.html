@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Documentacao - Clube Social IBTP</title>
+</head>
+<body>
+
+<h1>Documentacao do Sistema - Clube Social IBTP</h1>
+<hr>
+
+<h2>Indice</h2>
+<ul>
+    <li><a href="#apresentacao">1. Apresentacao do sistema</a></li>
+    <li><a href="#regras">2. Regras de negocio</a></li>
+    <li><a href="#classes">3. Classes</a></li>
+    <li><a href="#tabelas">4. Tabelas do banco de dados</a></li>
+    <li><a href="#arquivos">5. Arquivos do sistema</a></li>
+    <li><a href="#equipe">6. Equipe de desenvolvimento</a></li>
+</ul>
+
+<hr>
+
+<!-- ==================== 1. APRESENTACAO ==================== -->
+<h2 id="apresentacao">1. Apresentacao do sistema</h2>
+
+<p>
+    O sistema Clube Social IBTP e uma aplicacao web desenvolvida como trabalho
+    da disciplina de Criacao de Sites Dinamicos, com foco na integracao de
+    banco de dados com PHP.
+</p>
+<p>
+    O sistema permite o cadastro e login de membros do clube, e o gerenciamento
+    de eventos. Dependendo do cargo do usuario, ele pode criar ou excluir eventos,
+    ou apenas visualiza-los.
+</p>
+<p>
+    Tecnologias utilizadas: HTML, PHP e MySQL.
+</p>
+
+<hr>
+
+<!-- ==================== 2. REGRAS ==================== -->
+<h2 id="regras">2. Regras de negocio</h2>
+
+<ul>
+    <li>Cada membro possui apenas um cargo por vez.</li>
+    <li>
+        O cargo determina o que o usuario pode fazer no sistema:
+        <ul>
+            <li>Membros com cargo de <strong>Admin</strong> podem criar e excluir eventos e excluir usuarios.</li>
+            <li>Membros com cargo comum so podem visualizar os eventos.</li>
+        </ul>
+    </li>
+    <li>Para acessar o sistema o usuario precisa estar cadastrado e informar ID e senha corretos.</li>
+    <li>A senha é armazenada no banco de dados.</li>
+</ul>
+
+<hr>
+
+<!-- ==================== 3. CLASSES ==================== -->
+<h2 id="classes">3. Classes</h2>
+
+<p>As classes estao na pasta <code>model/</code>.</p>
+
+<!-- Usuario -->
+<h3>3.1 Classe Usuario</h3>
+<p>Arquivo: <code>model/usuario.php</code></p>
+<p>Representa um membro cadastrado no clube.</p>
+
+<p><strong>Atributos:</strong></p>
+<ul>
+    <li><code>$id</code> - identificador unico do usuario (texto, definido pelo proprio usuario)</li>
+    <li><code>$nome</code> - nome completo do membro</li>
+    <li><code>$sexo</code> - sexo do membro (M ou F)</li>
+    <li><code>$senha</code> - senha de acesso</li>
+</ul>
+
+<p><strong>Metodos:</strong></p>
+<ul>
+    <li><code>__construct($wnome, $wsexo, $wid, $wsenha)</code> - construtor da classe, inicializa os atributos</li>
+    <li><code>cadastrar()</code> - insere um novo usuario no banco de dados</li>
+    <li><code>login()</code> - verifica as credenciais do usuario no banco de dados</li>
+    <li><code>atualizar()</code> - atualiza os dados do usuario no banco de dados</li>
+</ul>
+
+<!-- Eventos -->
+<h3>3.2 Classe Eventos</h3>
+<p>Arquivo: <code>model/eventos.php</code></p>
+<p>Representa um evento do clube.</p>
+
+<p><strong>Atributos:</strong></p>
+<ul>
+    <li><code>$nome</code> - nome do evento</li>
+    <li><code>$data</code> - data em que o evento ocorrera</li>
+    <li><code>$local</code> - local onde o evento sera realizado</li>
+</ul>
+
+<p><strong>Metodos:</strong></p>
+<ul>
+    <li><code>__construct($wnome, $wdata, $wlocal)</code> - construtor da classe, inicializa os atributos</li>
+    <li><code>criarEvento()</code> - insere um novo evento no banco de dados</li>
+    <li><code>listarEventos()</code> - retorna todos os eventos cadastrados</li>
+    <li><code>atualizarEventos()</code> - atualiza os dados de um evento no banco de dados</li>
+</ul>
+
+<!-- Cargos -->
+<h3>3.3 Classe Cargos</h3>
+<p>Arquivo: <code>model/cargos.php</code></p>
+<p>
+    Extende a classe Usuario. Representa um usuario com cargo especifico,
+    adicionando permissoes de administracao ao sistema.
+</p>
+
+<p><strong>Atributos proprios (alem dos herdados de Usuario):</strong></p>
+<ul>
+    <li><code>$id_cargo</code> - identificador do cargo do usuario</li>
+    <li><code>$data</code> - data de atribuicao do cargo</li>
+</ul>
+
+<p><strong>Metodos:</strong></p>
+<ul>
+    <li>
+        <code>__construct($wnome, $wsexo, $wid, $wsenha, $wid_cargo, $wdata)</code>
+        - construtor que chama o <code>parent::__construct()</code> de Usuario e inicializa os atributos proprios
+    </li>
+    <li><code>excluirUsuario()</code> - remove um usuario do banco de dados (apenas Admin)</li>
+    <li><code>excluirEvento()</code> - remove um evento do banco de dados (apenas Admin)</li>
+</ul>
+
+<p><strong>Relacao entre as classes:</strong></p>
+<pre>
+    Usuario
+       |
+    (extends)
+       |
+    Cargos
+</pre>
+
+<hr>
+
+<!-- ==================== 4. TABELAS ==================== -->
+<h2 id="tabelas">4. Tabelas do banco de dados</h2>
+
+<p>Nome do banco: <code>ClubeSocial</code></p>
+
+<h3>4.1 Tabela: usuario</h3>
+<pre>
+Campo       Tipo            Descricao
+---------   -----------     ----------------------------
+id          VARCHAR(30)     Chave primaria - definido pelo usuario
+nome        VARCHAR(100)    Nome completo do membro
+sexo        CHAR(1)         M ou F
+senha       VARCHAR(20)    Senha
+id_cargo    INT             Chave estrangeira - referencia tabela cargo
+</pre>
+
+<h3>4.2 Tabela: cargo</h3>
+<pre>
+Campo       Tipo            Descricao
+---------   -----------     ----------------------------
+id_cargo    INT             Chave primaria - gerada automaticamente
+nome        VARCHAR(50)     Nome do cargo (ex: Admin, Membro)
+data        DATE            Data de atribuicao do cargo
+</pre>
+
+<h3>4.3 Tabela: evento</h3>
+<pre>
+Campo       Tipo            Descricao
+---------   -----------     ----------------------------
+id_evento   INT             Chave primaria - gerada automaticamente
+nome        VARCHAR(100)    Nome do evento
+data        DATE            Data do evento
+local       VARCHAR(100)    Local onde ocorre o evento
+</pre>
+
+<hr>
+
+<!-- ==================== 5. ARQUIVOS ==================== -->
+<h2 id="arquivos">5. Arquivos do sistema</h2>
+
+<pre>
+Clube-Social/
+|
+|-- index.php              Tela inicial com formulario de login e botao de cadastro
+|-- cadastrar.php          Tela de cadastro de novo membro
+|
+|-- model/
+|   |-- usuario.php         Classe Usuario (atributos e metodos do membro)
+|   |-- eventos.php         Classe Eventos (atributos e metodos dos eventos)
+|   |-- cargos.php          Classe Cargos (extende Usuario, metodos de admin)
+|
+|-- Docs/
+    |-- documentacao.html   Este arquivo de documentacao
+</pre>
+
+<h3>Configuracao da conexao (VerficarInicio.php)</h3>
+<pre>
+$hostname  = "localhost"
+$dbname    = "ClubeSocial"
+<!-- Ainda será criado o banco de dados e as devidas tabelas e informações -->
+</pre>
+
+<hr>
+
+<!-- ==================== 6. EQUIPE ==================== -->
+<h2 id="equipe">6. Equipe de desenvolvimento</h2>
+
+<ul>
+    <li>Integrante 1 - Leonardo Querci Prado Hernandes - 316877</li>
+    <li>Integrante 2 - Arthur Henrique Souza - 318292</li>
+    <li>Integrante 3 - Miguel Vieira menezes da Silva - 318207</li>
+</ul>
+
+<hr>
+<p><small>Documentacao para o trabalho T1 - Disciplina de Criacao de Sites Dinamicos - Prof° Santana</small></p>
+
+</body>
+</html>

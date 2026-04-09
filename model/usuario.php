@@ -18,6 +18,11 @@ class Usuario
     }
 
     function cadastrar(){
-        
+    }
+    
+    function login(){
+    }
+    
+    function atualizar(){
     }
 }

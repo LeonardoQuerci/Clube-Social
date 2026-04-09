@@ -15,14 +15,10 @@ class Cargos extends Usuario{
             $this->data = $wdata;
         }
 
-    function __destruct()
-    {
-        //echo "<br>No destrutor de Pessoas<br>" ;
+    function excluirUsuario(){
+
     }
-    /*
-        function display(){
-            echo "<br> nome = " . $this->nome ;
-            echo "<br> sexo = " . $this->sexo . "<br>" ;
-        }
-*/
+    function excluirEvento(){
+        
+    }
 }

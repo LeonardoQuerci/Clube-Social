@@ -15,5 +15,15 @@ class Eventos
         $this->local = $wlocal;
     }
 
-    function criarEvento()
+    function criarEvento(){
+
+    }
+    
+    function listarEventos(){
+
+    }
+
+    function atulizarEventos(){
+        
+    }
 }
