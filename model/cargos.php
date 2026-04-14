@@ -33,7 +33,7 @@ class Cargos extends Usuario{
  
         echo $result ? "USUARIO EXCLUIDO COM SUCESSO" : "ERRO AO EXCLUIR USUARIO";
     }
- 
+    
     function excluirEvento(){
         $hostname="localhost";
         $username="Exemplo";

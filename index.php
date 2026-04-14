@@ -9,7 +9,7 @@
     <h1>Seja bem-vindo ao clube do IBTP</h1>
     <div>
       <h3>Entrar</h3>
-      <form action="" method="post">
+      <form action="aindaVeremos.php" method="post">
         ID:
         <input type="text" name="id" placeholder="Santana" /> <br />
         <br />
@@ -31,5 +31,6 @@
       <input type="submit" name="" id="" value="Documentacao" />
     </form>
     </div>
+    <h1>Santana, apenas para te lembrar que os dados que estão nas classes são apenas prótotipos e ainda criaremos um oficial, mas mesmo assim colocamos a lógica por trás de cada função.</h1>
   </body>
 </html>
