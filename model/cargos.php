@@ -16,9 +16,40 @@ class Cargos extends Usuario{
         }
 
     function excluirUsuario(){
-
+        $hostname="localhost";
+        $username="Exemplo";
+        $password="12345";
+        $dbname="clubeSocial";
+        $usertable="usuarios";
+ 
+        $keyId=$_POST['id'];
+ 
+        $conn=mysqli_connect($hostname,$username,$password);
+        mysqli_select_db($conn,$dbname);
+ 
+        // Exclui o usuario que tem o id informado
+        $query="DELETE FROM $usertable WHERE id='$keyId'";
+        $result=mysqli_query($conn,$query);
+ 
+        echo $result ? "USUARIO EXCLUIDO COM SUCESSO" : "ERRO AO EXCLUIR USUARIO";
     }
+ 
     function excluirEvento(){
-        
+        $hostname="localhost";
+        $username="Exemplo";
+        $password="12345";
+        $dbname="clubeSocial";
+        $usertable="eventos";
+ 
+        $keyNome=$_POST['nome'];
+ 
+        $conn=mysqli_connect($hostname,$username,$password);
+        mysqli_select_db($conn,$dbname);
+ 
+        // Exclui o evento que tem o nome informado
+        $query="DELETE FROM $usertable WHERE nome='$keyNome'";
+        $result=mysqli_query($conn,$query);
+ 
+        echo $result ? "EVENTO EXCLUIDO COM SUCESSO" : "ERRO AO EXCLUIR EVENTO";
     }
 }
