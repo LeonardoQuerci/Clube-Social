@@ -1,7 +1,15 @@
 <?php
 session_start();
 
-require "conecta.php"; 
+require "conecta.php";
+
+// Logout
+if (isset($_GET['logout'])) {
+    $_SESSION = array();
+    session_destroy();
+    header("Location: index.php");
+    exit;
+}
 
 if (isset($_POST['id']) && isset($_POST['senha'])) {
     $id = $_POST['id'];

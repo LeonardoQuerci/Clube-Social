@@ -27,7 +27,7 @@ class Usuario
 
         $erros = [];
 
-        if (empty($kayId)) {
+        if (empty($keyId)) {
             $erros[] = "O CPF É OBRIGATÓRIO";
         }
         if (empty($keyNome)) {

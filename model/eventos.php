@@ -4,85 +4,89 @@ class Eventos
     public $nome;
     public $data;
     public $local;
+    private $db;
 
-    //Método homonimo de classe não é mais construtor
-    // construtor da classe (PHP só aceita um por classe)
-    function __construct($wnome, $wdata, $wlocal)
+    function __construct($pdo, $wnome = null, $wdata = null, $wlocal = null)
     {
-        //echo "no construtor de Pessoa <br>" ;
+        $this->db = $pdo;
         $this->nome = $wnome;
         $this->data = $wdata;
         $this->local = $wlocal;
     }
 
-    function criarEvento(){
-        $hostname="localhost";
-        $username="Exemplo";
-        $password="12345";
-        $dbname="clubeSocial";
-        $usertable="eventos";
- 
-        $keyNome=$_POST['nome'];
-        $keyData=$_POST['data'];
-        $keyLocal=$_POST['local'];
- 
-        $conn=mysqli_connect($hostname,$username,$password);
-        mysqli_select_db($conn,$dbname);
- 
-        $query="INSERT INTO $usertable VALUES ('$keyNome', '$keyData', '$keyLocal')";
-        $result=mysqli_query($conn,$query);
- 
-        echo $result ? "EVENTO CRIADO COM SUCESSO" : "ERRO AO CRIAR EVENTO";
-    }
-    
-    function listarEventos(){
-        $hostname="localhost";
-        $username="Exemplo";
-        $password="12345";
-        $dbname="clubeSocial";
-        $usertable="eventos";
- 
-        $conn=mysqli_connect($hostname,$username,$password);
-        mysqli_select_db($conn,$dbname);
- 
-        // Busca todos os eventos cadastrados no banco
-        $query="SELECT * FROM $usertable";
-        $result=mysqli_query($conn,$query);
- 
-        // Verifica se encontrou algum evento
-        if(mysqli_num_rows($result) > 0){
- 
-            // Percorre linha por linha e exibe os dados
-            while($row=mysqli_fetch_assoc($result)){
-                echo "Nome: " . $row['nome'];
-                echo " | Data: " . $row['data'];
-                echo " | Local: " . $row['local'];
-                echo "<br>";
-            }
- 
-        } else {
-            echo "NENHUM EVENTO CADASTRADO";
+    function criarEvento()
+    {
+        $keyNome = $_POST['nome'];
+        $keyData = $_POST['data'];
+        $keyLocal = $_POST['local'];
+
+        try {
+            $query = "INSERT INTO eventos (nome, _data, _local) VALUES (:nome, :data, :local)";
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':nome', $keyNome);
+            $stmt->bindParam(':data', $keyData);
+            $stmt->bindParam(':local', $keyLocal);
+            $result = $stmt->execute();
+            echo $result ? "✅ EVENTO CRIADO COM SUCESSO" : "❌ ERRO AO CRIAR EVENTO";
+        } catch (PDOException $e) {
+            echo "❌ ERRO AO CRIAR EVENTO: " . $e->getMessage();
         }
     }
- 
-    function atulizarEventos(){
-        $hostname="localhost";
-        $username="Exemplo";
-        $password="12345";
-        $dbname="clubeSocial";
-        $usertable="eventos";
- 
-        $keyNome=$_POST['nome'];
-        $keyData=$_POST['data'];
-        $keyLocal=$_POST['local'];
- 
-        $conn=mysqli_connect($hostname,$username,$password);
-        mysqli_select_db($conn,$dbname);
- 
-        // Atualiza data e local do evento que tem o nome informado
-        $query="UPDATE $usertable SET data='$keyData', local='$keyLocal' WHERE nome='$keyNome'";
-        $result=mysqli_query($conn,$query);
- 
-        echo $result ? "EVENTO ATUALIZADO COM SUCESSO" : "ERRO AO ATUALIZAR EVENTO";
+
+    function listarEventos()
+    {
+        try {
+            $query = "SELECT * FROM eventos";
+            $stmt = $this->db->prepare($query);
+            $stmt->execute();
+            $eventos = $stmt->fetchAll();
+
+            if (count($eventos) > 0) {
+                foreach ($eventos as $row) {
+                    echo "Nome: " . htmlspecialchars($row['nome']);
+                    echo " | Data: " . htmlspecialchars($row['_data']);
+                    echo " | Local: " . htmlspecialchars($row['_local']);
+                    echo "<br>";
+                }
+            } else {
+                echo "NENHUM EVENTO CADASTRADO";
+            }
+        } catch (PDOException $e) {
+            echo "❌ ERRO AO LISTAR EVENTOS: " . $e->getMessage();
+        }
+    }
+
+    function atualizarEventos()
+    {
+        $keyIdEvento = $_POST['id_evento'];
+        $keyData = $_POST['data'];
+        $keyLocal = $_POST['local'];
+
+        try {
+            $query = "UPDATE eventos SET _data = :data, _local = :local WHERE id_evento = :id_evento";
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':data', $keyData);
+            $stmt->bindParam(':local', $keyLocal);
+            $stmt->bindParam(':id_evento', $keyIdEvento);
+            $result = $stmt->execute();
+            echo $result ? "✅ EVENTO ATUALIZADO COM SUCESSO" : "❌ ERRO AO ATUALIZAR EVENTO";
+        } catch (PDOException $e) {
+            echo "❌ ERRO AO ATUALIZAR EVENTO: " . $e->getMessage();
+        }
+    }
+
+    function excluirEvento()
+    {
+        $keyIdEvento = $_POST['id_evento'];
+
+        try {
+            $query = "DELETE FROM eventos WHERE id_evento = :id_evento";
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':id_evento', $keyIdEvento);
+            $result = $stmt->execute();
+            echo $result ? "✅ EVENTO EXCLUÍDO COM SUCESSO" : "❌ ERRO AO EXCLUIR EVENTO";
+        } catch (PDOException $e) {
+            echo "❌ ERRO AO EXCLUIR EVENTO: " . $e->getMessage();
+        }
     }
 }

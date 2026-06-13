@@ -1,55 +1,57 @@
 <?php
 
-require_once "usuario.php";
+class Cargos
+{
+    private $db;
 
-class Cargos extends Usuario{
-    public $id_cargo;
-    public $data;
-
-    //Método homonimo de classe não é mais construtor
-    // construtor da classe (PHP só aceita um por classe)
-     function __construct ($wnome, $wsexo, $wid, $wsenha, $wid_cargo, $wdata) {
-            //echo "no construtor de Pessoa <br>" ;
-            parent::__construct($wnome, $wsexo, $wid, $wsenha);
-            $this->id_cargo = $wid_cargo;
-            $this->data = $wdata;
-        }
-
-    function excluirUsuario(){
-        $hostname="localhost";
-        $username="Exemplo";
-        $password="12345";
-        $dbname="clubeSocial";
-        $usertable="usuarios";
- 
-        $keyId=$_POST['id'];
- 
-        $conn=mysqli_connect($hostname,$username,$password);
-        mysqli_select_db($conn,$dbname);
- 
-        // Exclui o usuario que tem o id informado
-        $query="DELETE FROM $usertable WHERE id='$keyId'";
-        $result=mysqli_query($conn,$query);
- 
-        echo $result ? "USUARIO EXCLUIDO COM SUCESSO" : "ERRO AO EXCLUIR USUARIO";
+    function __construct($pdo)
+    {
+        $this->db = $pdo;
     }
-    
-    function excluirEvento(){
-        $hostname="localhost";
-        $username="Exemplo";
-        $password="12345";
-        $dbname="clubeSocial";
-        $usertable="eventos";
- 
-        $keyNome=$_POST['nome'];
- 
-        $conn=mysqli_connect($hostname,$username,$password);
-        mysqli_select_db($conn,$dbname);
- 
-        // Exclui o evento que tem o nome informado
-        $query="DELETE FROM $usertable WHERE nome='$keyNome'";
-        $result=mysqli_query($conn,$query);
- 
-        echo $result ? "EVENTO EXCLUIDO COM SUCESSO" : "ERRO AO EXCLUIR EVENTO";
+
+    function excluirUsuario()
+    {
+        $keyId = $_POST['id'];
+
+        try {
+            $query = "DELETE FROM usuarios WHERE id = :id";
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':id', $keyId);
+            $result = $stmt->execute();
+            echo $result ? "✅ USUÁRIO EXCLUÍDO COM SUCESSO" : "❌ ERRO AO EXCLUIR USUÁRIO";
+        } catch (PDOException $e) {
+            echo "❌ ERRO AO EXCLUIR USUÁRIO: " . $e->getMessage();
+        }
+    }
+
+    function excluirEvento()
+    {
+        $keyIdEvento = $_POST['id_evento'];
+
+        try {
+            $query = "DELETE FROM eventos WHERE id_evento = :id_evento";
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':id_evento', $keyIdEvento);
+            $result = $stmt->execute();
+            echo $result ? "✅ EVENTO EXCLUÍDO COM SUCESSO" : "❌ ERRO AO EXCLUIR EVENTO";
+        } catch (PDOException $e) {
+            echo "❌ ERRO AO EXCLUIR EVENTO: " . $e->getMessage();
+        }
+    }
+
+    function listarCargos()
+    {
+        try {
+            $query = "SELECT * FROM cargos";
+            $stmt = $this->db->prepare($query);
+            $stmt->execute();
+            $cargos = $stmt->fetchAll();
+
+            foreach ($cargos as $row) {
+                echo "ID: " . htmlspecialchars($row['id']) . " | Nome: " . htmlspecialchars($row['nome']) . "<br>";
+            }
+        } catch (PDOException $e) {
+            echo "❌ ERRO AO LISTAR CARGOS: " . $e->getMessage();
+        }
     }
 }

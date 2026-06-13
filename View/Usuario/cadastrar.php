@@ -14,12 +14,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Pagina de cadastro</title>
+  <link rel="stylesheet" href="../../css/style.css">
+  <script src="usuario.js"></script>
 </head>
 
 <body>
   <h3>Pagina de cadastro</h3>
 
-  <form action="cadastrar.php" method="post">
+  <form action="cadastrar.php" method="post" onsubmit="return validarCadastro()">
     <br />
     ID:
     <input type="text" name="id" /><br />

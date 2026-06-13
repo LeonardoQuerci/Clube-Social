@@ -1,0 +1,38 @@
+/* Estilo básico do Clube Social */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    margin: 0;
+    padding: 20px;
+}
+
+h1, h3 {
+    color: #2c3e50;
+}
+
+form {
+    background: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    max-width: 400px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.1);
+}
+
+input, button {
+    padding: 8px;
+    margin: 5px 0;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+button, input[type="submit"] {
+    background-color: #2980b9;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover, input[type="submit"]:hover {
+    background-color: #1f6391;
+}
