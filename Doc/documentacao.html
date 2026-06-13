@@ -3,176 +3,189 @@
 <head>
     <meta charset="UTF-8">
     <title>Documentacao - Clube Social IBTP</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        pre { background:#fff; padding:10px; border-radius:6px; overflow-x:auto; box-shadow: 0 0 8px rgba(0,0,0,0.1); }
+        table { border-collapse: collapse; margin: 10px 0; background:#fff; }
+        table, th, td { border: 1px solid #ccc; }
+        th, td { padding: 6px 12px; text-align: left; }
+        img { max-width: 100%; border: 1px solid #ccc; border-radius: 6px; }
+    </style>
 </head>
 <body>
 
-<h1>Documentacao do Sistema - Clube Social IBTP</h1>
+<h1>Documentação do Sistema - Clube Social IBTP</h1>
 <hr>
 
-<h2>Indice</h2>
+<h2>Índice</h2>
 <ul>
-    <li><a href="#apresentacao">1. Apresentacao do sistema</a></li>
-    <li><a href="#regras">2. Regras de negocio</a></li>
-    <li><a href="#classes">3. Classes</a></li>
-    <li><a href="#tabelas">4. Tabelas do banco de dados</a></li>
+    <li><a href="#apresentacao">1. Proposta do sistema</a></li>
+    <li><a href="#regras">2. Regras de negócio</a></li>
+    <li><a href="#classes">3. Diagrama de Classes</a></li>
+    <li><a href="#tabelas">4. Diagrama de Entidade-Relacionamento (Tabelas)</a></li>
     <li><a href="#arquivos">5. Arquivos do sistema</a></li>
     <li><a href="#equipe">6. Equipe de desenvolvimento</a></li>
 </ul>
 
 <hr>
 
-<!-- ==================== 1. APRESENTACAO ==================== -->
-<h2 id="apresentacao">1. Apresentacao do sistema</h2>
+<!-- ==================== 1. PROPOSTA ==================== -->
+<h2 id="apresentacao">1. Proposta do sistema</h2>
 
 <p>
-    O sistema Clube Social IBTP e uma aplicacao web desenvolvida como trabalho
-    da disciplina de Criacao de Sites Dinamicos, com foco na integracao de
-    banco de dados com PHP.
+    O <strong>Clube Social IBTP</strong> é um sistema web desenvolvido para a disciplina de
+    Criação de Sites Dinâmicos, com o objetivo de gerenciar o cadastro de membros e os
+    eventos promovidos pelo clube.
 </p>
 <p>
-    O sistema permite o cadastro e login de membros do clube, e o gerenciamento
-    de eventos. Dependendo do cargo do usuario, ele pode criar ou excluir eventos,
-    ou apenas visualiza-los.
+    O sistema possui dois níveis de acesso:
+</p>
+<ul>
+    <li><strong>Membro (nível 1):</strong> pode visualizar seus dados e a lista de eventos do clube.</li>
+    <li><strong>Administrador (nível 2):</strong> além de tudo que o membro pode fazer, também
+        pode cadastrar, atualizar e excluir eventos, e excluir usuários cadastrados.</li>
+</ul>
+<p>
+    Tecnologias utilizadas: HTML, CSS, JavaScript, PHP (PDO) e MySQL/MariaDB.
 </p>
 <p>
-    Tecnologias utilizadas: HTML, PHP e MySQL.
+    O acesso ao sistema é feito por meio de login (ID + senha), com controle de sessão via
+    <code>$_SESSION</code> e verificação de nível de acesso em todas as páginas internas
+    (<code>verifica.php</code>).
 </p>
 
 <hr>
 
 <!-- ==================== 2. REGRAS ==================== -->
-<h2 id="regras">2. Regras de negocio</h2>
+<h2 id="regras">2. Regras de negócio</h2>
 
 <ul>
-    <li>Cada membro possui apenas um cargo por vez.</li>
-    <li>
-        O cargo determina o que o usuario pode fazer no sistema:
+    <li>Cada usuário possui exatamente um cargo (Membro ou Administrador), definido pela coluna <code>cargo_id</code>.</li>
+    <li>O cargo determina o que o usuário pode fazer no sistema:
         <ul>
-            <li>Membros com cargo de <strong>Admin</strong> podem criar e excluir eventos e excluir usuarios.</li>
-            <li>Membros com cargo comum so podem visualizar os eventos.</li>
+            <li>Administradores podem cadastrar, atualizar e excluir eventos, e excluir usuários.</li>
+            <li>Membros podem apenas visualizar a lista de eventos e seus próprios dados.</li>
         </ul>
     </li>
-    <li>Para acessar o sistema o usuario precisa estar cadastrado e informar ID e senha corretos.</li>
-    <li>A senha é armazenada no banco de dados.</li>
+    <li>Para acessar o sistema, o usuário precisa estar cadastrado e informar ID e senha corretos.</li>
+    <li>A senha é armazenada no banco de dados criptografada com MD5.</li>
+    <li>Todo novo cadastro recebe automaticamente o cargo de Membro (<code>cargo_id = 1</code>), salvo indicação contrária.</li>
+    <li>Um cargo não pode ser excluído se houver usuários vinculados a ele (restrição <code>ON DELETE RESTRICT</code>).</li>
 </ul>
 
 <hr>
 
 <!-- ==================== 3. CLASSES ==================== -->
-<h2 id="classes">3. Classes</h2>
+<h2 id="classes">3. Diagrama de Classes</h2>
 
-<p>As classes estao na pasta <code>model/</code>.</p>
+<p>As classes do sistema estão na pasta <code>model/</code> e recebem a conexão PDO (<code>$pdo</code>) via construtor.</p>
 
-<!-- Usuario -->
 <h3>3.1 Classe Usuario</h3>
 <p>Arquivo: <code>model/usuario.php</code></p>
-<p>Representa um membro cadastrado no clube.</p>
+<pre>
++--------------------------------------+
+|               Usuario                |
++--------------------------------------+
+| - db: PDO                            |
+| + id: string                         |
+| + nome: string                       |
+| + sexo: char                         |
+| + senha: string                      |
++--------------------------------------+
+| + __construct(pdo, nome, sexo,       |
+|                id, senha)             |
+| + cadastrar(): void                  |
+| + atualizar(): void                  |
++--------------------------------------+
+</pre>
 
-<p><strong>Atributos:</strong></p>
-<ul>
-    <li><code>$id</code> - identificador unico do usuario (auto_increment)</li>
-    <li><code>$nome</code> - nome completo do membro</li>
-    <li><code>$sexo</code> - sexo do membro (M ou F)</li>
-    <li><code>$senha</code> - senha de acesso</li>
-</ul>
-
-<p><strong>Metodos:</strong></p>
-<ul>
-    <li><code>__construct($wnome, $wsexo, $wid, $wsenha)</code> - construtor da classe, inicializa os atributos</li>
-    <li><code>cadastrar()</code> - insere um novo usuario no banco de dados</li>
-    <li><code>login()</code> - verifica as credenciais do usuario no banco de dados</li>
-    <li><code>atualizar()</code> - atualiza os dados do usuario no banco de dados</li>
-</ul>
-
-<!-- Eventos -->
 <h3>3.2 Classe Eventos</h3>
 <p>Arquivo: <code>model/eventos.php</code></p>
-<p>Representa um evento do clube.</p>
+<pre>
++--------------------------------------+
+|               Eventos                |
++--------------------------------------+
+| - db: PDO                            |
+| + nome: string                       |
+| + data: datetime                     |
+| + local: string                      |
++--------------------------------------+
+| + __construct(pdo, nome, data, local)|
+| + criarEvento(): void                |
+| + listarEventos(): void              |
+| + atualizarEventos(): void           |
+| + excluirEvento(): void              |
++--------------------------------------+
+</pre>
 
-<p><strong>Atributos:</strong></p>
-<ul>
-    <li><code>$nome</code> - nome do evento</li>
-    <li><code>$data</code> - data em que o evento ocorrera</li>
-    <li><code>$local</code> - local onde o evento sera realizado</li>
-</ul>
-
-<p><strong>Metodos:</strong></p>
-<ul>
-    <li><code>__construct($wnome, $wdata, $wlocal)</code> - construtor da classe, inicializa os atributos</li>
-    <li><code>criarEvento()</code> - insere um novo evento no banco de dados</li>
-    <li><code>listarEventos()</code> - retorna todos os eventos cadastrados</li>
-    <li><code>atualizarEventos()</code> - atualiza os dados de um evento no banco de dados</li>
-</ul>
-
-<!-- Cargos -->
 <h3>3.3 Classe Cargos</h3>
 <p>Arquivo: <code>model/cargos.php</code></p>
-<p>
-    Extende a classe Usuario. Representa um usuario com cargo especifico,
-    adicionando permissoes de administracao ao sistema.
-</p>
-
-<p><strong>Atributos proprios (alem dos herdados de Usuario):</strong></p>
-<ul>
-    <li><code>$id_cargo</code> - identificador do cargo do usuario</li>
-    <li><code>$data</code> - data de atribuicao do cargo</li>
-</ul>
-
-<p><strong>Metodos:</strong></p>
-<ul>
-    <li>
-        <code>__construct($wnome, $wsexo, $wid, $wsenha, $wid_cargo, $wdata)</code>
-        - construtor que chama o <code>parent::__construct()</code> de Usuario e inicializa os atributos proprios
-    </li>
-    <li><code>excluirUsuario()</code> - remove um usuario do banco de dados (apenas Admin)</li>
-    <li><code>excluirEvento()</code> - remove um evento do banco de dados (apenas Admin)</li>
-</ul>
-
-<p><strong>Relacao entre as classes:</strong></p>
 <pre>
-    Usuario
-       |
-    (extends)
-       |
-    Cargos
++--------------------------------------+
+|                Cargos                |
++--------------------------------------+
+| - db: PDO                            |
++--------------------------------------+
+| + __construct(pdo)                   |
+| + excluirUsuario(): void             |
+| + excluirEvento(): void              |
+| + listarCargos(): void               |
++--------------------------------------+
 </pre>
+
+<p>
+    <strong>Relação entre as classes:</strong> as três classes são independentes e se
+    relacionam apenas por meio das tabelas do banco de dados (Usuario ↔ Cargos via
+    <code>cargo_id</code>; Eventos é gerenciada por usuários do tipo Administrador através
+    da classe Cargos/Eventos).
+</p>
 
 <hr>
 
-<!-- ==================== 4. TABELAS ==================== -->
-<h2 id="tabelas">4. Tabelas do banco de dados</h2>
+<!-- ==================== 4. TABELAS / ER ==================== -->
+<h2 id="tabelas">4. Diagrama de Entidade-Relacionamento (Tabelas)</h2>
 
-<p>Nome do banco: <code>ClubeSocial</code></p>
+<p>Nome do banco de dados: <code>clube</code></p>
 
-<h3>4.1 Tabela: usuario</h3>
-<pre>
-Campo       Tipo            Descricao
----------   -----------     ----------------------------
-id          VARCHAR(30)     Chave primaria - definido pelo usuario
-nome        VARCHAR(100)    Nome completo do membro
-sexo        CHAR(1)         M ou F
-senha       VARCHAR(20)    Senha
-id_cargo    INT             Chave estrangeira - referencia tabela cargo
-</pre>
+<h3>4.1 Tabela: cargos</h3>
+<table>
+<tr><th>Campo</th><th>Tipo</th><th>Descrição</th></tr>
+<tr><td>id</td><td>INT (PK)</td><td>Identificador do cargo</td></tr>
+<tr><td>nome</td><td>VARCHAR(255)</td><td>Nome do cargo (Membro, Administrador)</td></tr>
+</table>
 
-<h3>4.2 Tabela: cargo</h3>
-<pre>
-Campo       Tipo            Descricao
----------   -----------     ----------------------------
-id_cargo    INT             Chave primaria - gerada automaticamente
-nome        VARCHAR(50)     Nome do cargo (ex: Admin, Membro)
-data        DATE            Data de atribuicao do cargo
-</pre>
+<h3>4.2 Tabela: usuarios</h3>
+<table>
+<tr><th>Campo</th><th>Tipo</th><th>Descrição</th></tr>
+<tr><td>id</td><td>VARCHAR(255) (PK)</td><td>Identificador do usuário, definido por ele mesmo</td></tr>
+<tr><td>nome</td><td>VARCHAR(255)</td><td>Nome completo do membro</td></tr>
+<tr><td>senha</td><td>VARCHAR(32)</td><td>Senha criptografada (MD5)</td></tr>
+<tr><td>sexo</td><td>CHAR(1)</td><td>M ou F</td></tr>
+<tr><td>cargo_id</td><td>INT (FK → cargos.id)</td><td>Cargo do usuário</td></tr>
+</table>
 
-<h3>4.3 Tabela: evento</h3>
-<pre>
-Campo       Tipo            Descricao
----------   -----------     ----------------------------
-id_evento   INT             Chave primaria - gerada automaticamente
-nome        VARCHAR(100)    Nome do evento
-data        DATE            Data do evento
-local       VARCHAR(100)    Local onde ocorre o evento
-</pre>
+<h3>4.3 Tabela: eventos</h3>
+<table>
+<tr><th>Campo</th><th>Tipo</th><th>Descrição</th></tr>
+<tr><td>id_evento</td><td>INT (PK, AUTO_INCREMENT)</td><td>Identificador do evento</td></tr>
+<tr><td>nome</td><td>VARCHAR(255)</td><td>Nome do evento</td></tr>
+<tr><td>_data</td><td>DATETIME</td><td>Data e hora do evento</td></tr>
+<tr><td>_local</td><td>VARCHAR(255)</td><td>Local do evento</td></tr>
+</table>
+
+<h3>4.4 Relacionamentos</h3>
+<ul>
+    <li><strong>cargos (1) ──── (N) usuarios</strong>: um cargo pode estar associado a vários usuários, mas cada usuário possui apenas um cargo (FK <code>usuarios.cargo_id → cargos.id</code>).</li>
+    <li><strong>eventos</strong>: tabela independente, sem relacionamento direto de chave estrangeira com as demais — o controle de quem pode gerenciá-la é feito pela aplicação (nível de acesso do usuário logado).</li>
+</ul>
+
+<h3>4.5 Figura - Diagrama gerado pelo Designer do phpMyAdmin</h3>
+<p>
+    Diagrama gerado na ferramenta <em>Designer</em> do phpMyAdmin, mostrando as tabelas
+    <code>cargos</code>, <code>usuarios</code> e <code>eventos</code> e seus relacionamentos:
+</p>
+<img src="Images/er-diagrama.png" alt="Diagrama ER - Designer phpMyAdmin">
+<p><small>(Substitua a imagem em <code>Doc/Images/er-diagrama.png</code> pelo print tirado do Designer do phpMyAdmin, no banco "clube".)</small></p>
 
 <hr>
 
@@ -182,23 +195,42 @@ local       VARCHAR(100)    Local onde ocorre o evento
 <pre>
 Clube-Social/
 |
-|-- index.php              Tela inicial com formulario de login e botao de cadastro
-|-- cadastrar.php          Tela de cadastro de novo membro
+|-- index.php              Tela inicial com formulário de login e botão de cadastro
+|-- login.php              Processa login/logout e controle de sessão
+|-- verifica.php           Verifica sessão e nível de acesso
+|-- conecta.php            Cria a conexão PDO
+|-- parametros.php         Parâmetros de conexão (dbname, host, usuário, senha)
+|
+|-- css/
+|   |-- style.css           Estilo visual padrão do sistema
+|
+|-- Images/                 Imagens utilizadas pelo sistema
 |
 |-- model/
-|   |-- usuario.php         Classe Usuario (atributos e metodos do membro)
-|   |-- eventos.php         Classe Eventos (atributos e metodos dos eventos)
-|   |-- cargos.php          Classe Cargos (extende Usuario, metodos de admin)
+|   |-- usuario.php         Classe Usuario (cadastro, atualização)
+|   |-- eventos.php         Classe Eventos (CRUD de eventos)
+|   |-- cargos.php          Classe Cargos (exclusão de usuários/eventos, listagem de cargos)
+|   |-- cria.sql            Script de criação do banco de dados e tabelas
 |
-|-- Docs/
-    |-- documentacao.html   Este arquivo de documentacao
-</pre>
-
-<h3>Configuracao da conexao (VerficarInicio.php)</h3>
-<pre>
-$hostname  = "localhost"
-$dbname    = "ClubeSocial"
-<!-- Ainda será criado o banco de dados e as devidas tabelas e informações -->
+|-- View/
+|   |-- Usuario/
+|   |   |-- cadastrar.php   Formulário de cadastro de novo membro
+|   |   |-- membro.php      Painel do membro (nível 1)
+|   |   |-- admin.php       Painel do administrador (nível 2)
+|   |   |-- excluir.php     Exclusão de usuários (admin)
+|   |   |-- usuario.js      Validação do formulário de cadastro
+|   |
+|   |-- Eventos/
+|       |-- listar.php      Lista de eventos
+|       |-- cadastrar.php   Cadastro de evento (admin)
+|       |-- atualizar.php   Atualização de evento (admin)
+|       |-- excluir.php     Exclusão de evento (admin)
+|       |-- eventos.js      Validação dos formulários de eventos
+|
+|-- Doc/
+    |-- documentacao.html   Este arquivo de documentação
+    |-- Images/
+        |-- er-diagrama.png Diagrama ER do Designer do phpMyAdmin
 </pre>
 
 <hr>
@@ -209,11 +241,11 @@ $dbname    = "ClubeSocial"
 <ul>
     <li>Integrante 1 - Leonardo Querci Prado Hernandes - 316877</li>
     <li>Integrante 2 - Arthur Henrique Souza - 318292</li>
-    <li>Integrante 3 - Miguel Vieira menezes da Silva - 318207</li>
+    <li>Integrante 3 - Miguel Vieira Menezes da Silva - 318207</li>
 </ul>
 
 <hr>
-<p><small>Documentacao para o trabalho T1 - Disciplina de Criacao de Sites Dinamicos - Prof° Santana</small></p>
+<p><small>Documentação para o trabalho T1/T2 - Disciplina de Criação de Sites Dinâmicos - Prof° Santana</small></p>
 
 </body>
 </html>
